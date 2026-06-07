@@ -29,6 +29,11 @@ export const DEFAULT_PRICING_CONFIG = {
   "keychain-print": 60,
   "mobilecover-print": 180,
   "photoframe-print": 300,
+
+  // Corporate business service prices
+  "visiting-cards": 1.5,
+  "letterheads": 4,
+  "brochures": 8,
 };
 
 export function calculatePricing(

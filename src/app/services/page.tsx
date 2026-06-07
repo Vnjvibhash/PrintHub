@@ -118,6 +118,11 @@ function ServicesContent() {
     }
   };
 
+  const handleUploadSuccess = (fileUrl: string, fileMetadata: { name: string; size: number; type: string }) => {
+    setUploadedFileUrl(fileUrl);
+    setUploadedFileMeta(fileMetadata);
+  };
+
   const handleProceedToCheckout = () => {
     if (!selectedService || !livePrice) return;
 
