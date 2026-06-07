@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { 
   getAuth, 
   signInWithEmailAndPassword, 
@@ -7,7 +7,8 @@ import {
   GoogleAuthProvider, 
   signInWithPopup, 
   onAuthStateChanged as firebaseOnAuthStateChanged,
-  User as FirebaseUser
+  User as FirebaseUser,
+  type Auth
 } from "firebase/auth";
 import { 
   getFirestore, 
@@ -21,13 +22,15 @@ import {
   deleteDoc, 
   query, 
   where,
-  orderBy
+  orderBy,
+  type Firestore
 } from "firebase/firestore";
 import { 
   getStorage, 
   ref, 
   uploadBytesResumable, 
-  getDownloadURL 
+  getDownloadURL,
+  type FirebaseStorage
 } from "firebase/storage";
 import { UserProfile, ServiceItem, ProductItem, Order, NotificationRecord } from "@/types";
 
@@ -47,10 +50,10 @@ const isFirebaseConfigured = !!(
   firebaseConfig.authDomain
 );
 
-let firebaseApp;
-let firebaseAuth;
-let firebaseDb;
-let firebaseStorage;
+let firebaseApp: FirebaseApp | null = null;
+let firebaseAuth: Auth | null = null;
+let firebaseDb: Firestore | null = null;
+let firebaseStorage: FirebaseStorage | null = null;
 
 if (isFirebaseConfigured) {
   try {
@@ -176,7 +179,7 @@ const initLocalDatabase = () => {
         serviceCategory: "printing",
         files: [{ name: "semester_project_presentation.pdf", url: "#", size: 1048576, type: "application/pdf" }],
         quantity: 1,
-        specifications: { paperSize: "A4", colorMode: "color", sides: "double", binding: "spiral", lamination: "none", pages: 15, copies: 2 },
+        specifications: { paperSize: "A4", colorMode: "color", sides: "double", binding: "spiral", pages: 15, copies: 2 },
         priceBreakdown: { base: 10, optionsPrice: 40, subtotal: 340, gst: 61.2, total: 401.2 },
         paymentId: "pay_mock_12345",
         paymentMethod: "stripe",
@@ -220,10 +223,10 @@ export const authService = {
   // Subscribe to auth state changes
   onAuthStateChange: (callback: (user: UserProfile | null) => void) => {
     if (isFirebaseEnabled) {
-      return firebaseOnAuthStateChanged(firebaseAuth, async (firebaseUser: FirebaseUser | null) => {
+      return firebaseOnAuthStateChanged(firebaseAuth!, async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
           // Fetch additional profile fields from Firestore
-          const docRef = doc(firebaseDb, "users", firebaseUser.uid);
+          const docRef = doc(firebaseDb!, "users", firebaseUser.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             callback(docSnap.data() as UserProfile);
@@ -276,7 +279,7 @@ export const authService = {
   // Email/Password sign up
   signUp: async (email: string, password: string, displayName: string): Promise<UserProfile> => {
     if (isFirebaseEnabled) {
-      const userCred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      const userCred = await createUserWithEmailAndPassword(firebaseAuth!, email, password);
       const profile: UserProfile = {
         uid: userCred.user.uid,
         email,
@@ -286,7 +289,7 @@ export const authService = {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      await setDoc(doc(firebaseDb, "users", userCred.user.uid), profile);
+      await setDoc(doc(firebaseDb!, "users", userCred.user.uid), profile);
       return profile;
     } else {
       // Mock Signup
@@ -320,8 +323,8 @@ export const authService = {
   // Email/Password sign in
   signIn: async (email: string, password: string): Promise<UserProfile> => {
     if (isFirebaseEnabled) {
-      const userCred = await signInWithEmailAndPassword(firebaseAuth, email, password);
-      const docRef = doc(firebaseDb, "users", userCred.user.uid);
+      const userCred = await signInWithEmailAndPassword(firebaseAuth!, email, password);
+      const docRef = doc(firebaseDb!, "users", userCred.user.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         return docSnap.data() as UserProfile;
@@ -356,8 +359,8 @@ export const authService = {
   signInWithGoogle: async (): Promise<UserProfile> => {
     if (isFirebaseEnabled) {
       const provider = new GoogleAuthProvider();
-      const userCred = await signInWithPopup(firebaseAuth, provider);
-      const docRef = doc(firebaseDb, "users", userCred.user.uid);
+      const userCred = await signInWithPopup(firebaseAuth!, provider);
+      const docRef = doc(firebaseDb!, "users", userCred.user.uid);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -389,7 +392,7 @@ export const authService = {
   // Sign out
   signOut: async (): Promise<void> => {
     if (isFirebaseEnabled) {
-      await firebaseSignOut(firebaseAuth);
+      await firebaseSignOut(firebaseAuth!);
     } else {
       sessionStorage.removeItem("printhub_logged_in_uid");
       window.dispatchEvent(new Event("printhub_auth_event"));
@@ -398,7 +401,7 @@ export const authService = {
 
   updateUserProfile: async (uid: string, data: Partial<UserProfile>): Promise<UserProfile> => {
     if (isFirebaseEnabled) {
-      const docRef = doc(firebaseDb, "users", uid);
+      const docRef = doc(firebaseDb!, "users", uid);
       await updateDoc(docRef, { ...data, updatedAt: new Date().toISOString() });
       const docSnap = await getDoc(docRef);
       return docSnap.data() as UserProfile;
@@ -425,7 +428,7 @@ export const dbService = {
   // Read all items in a collection
   getCollection: async <T>(collName: string): Promise<T[]> => {
     if (isFirebaseEnabled) {
-      const q = query(collection(firebaseDb, collName));
+      const q = query(collection(firebaseDb!, collName));
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as T[];
     } else {
@@ -437,7 +440,7 @@ export const dbService = {
   // Read a single document by ID
   getDocument: async <T>(collName: string, docId: string): Promise<T | null> => {
     if (isFirebaseEnabled) {
-      const docRef = doc(firebaseDb, collName, docId);
+      const docRef = doc(firebaseDb!, collName, docId);
       const docSnap = await getDoc(docRef);
       return docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as T) : null;
     } else {
@@ -454,7 +457,7 @@ export const dbService = {
   // Add document (auto-generated ID)
   addDocument: async <T extends { id?: string }>(collName: string, documentData: Omit<T, "id">): Promise<T> => {
     if (isFirebaseEnabled) {
-      const collRef = collection(firebaseDb, collName);
+      const collRef = collection(firebaseDb!, collName);
       const docRef = await addDoc(collRef, documentData);
       return { id: docRef.id, ...documentData } as unknown as T;
     } else {
@@ -471,7 +474,7 @@ export const dbService = {
   // Set document (custom ID)
   setDocument: async <T>(collName: string, docId: string, documentData: T): Promise<T> => {
     if (isFirebaseEnabled) {
-      await setDoc(doc(firebaseDb, collName, docId), documentData as any);
+      await setDoc(doc(firebaseDb!, collName, docId), documentData as any);
       return documentData;
     } else {
       const collectionData = getLocalData(collName) || [];
@@ -491,7 +494,7 @@ export const dbService = {
   // Update document
   updateDocument: async (collName: string, docId: string, updateData: any): Promise<void> => {
     if (isFirebaseEnabled) {
-      await updateDoc(doc(firebaseDb, collName, docId), updateData);
+      await updateDoc(doc(firebaseDb!, collName, docId), updateData);
     } else {
       const collectionData = getLocalData(collName) || [];
       const index = collectionData.findIndex((item: any) => item.id === docId);
@@ -512,7 +515,7 @@ export const dbService = {
   // Query documents with filters
   queryDocuments: async <T>(collName: string, filters: { field: string; operator: "==" | ">" | "<" | "array-contains"; value: any }[]): Promise<T[]> => {
     if (isFirebaseEnabled) {
-      let q = query(collection(firebaseDb, collName));
+      let q = query(collection(firebaseDb!, collName));
       filters.forEach(f => {
         q = query(q, where(f.field, f.operator, f.value));
       });
@@ -542,7 +545,7 @@ export const storageService = {
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       if (isFirebaseEnabled) {
-        const storageRef = ref(firebaseStorage, path);
+        const storageRef = ref(firebaseStorage!, path);
         const uploadTask = uploadBytesResumable(storageRef, file);
 
         uploadTask.on(
