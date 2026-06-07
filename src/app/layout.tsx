@@ -41,6 +41,16 @@ export default function RootLayout({
             <div className="glow-spot top-[-100px] left-[-100px] opacity-40 dark:opacity-20" />
             <div className="glow-spot bottom-[-200px] right-[-100px] opacity-40 dark:opacity-20" />
             {children}
+
+            <a
+              href="https://wa.me/917762974716?text=Hello%20PrintHub%20Team%2C%20I%20need%20help%20with%20my%20order."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-3 rounded-full bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-2xl shadow-emerald-500/30 transition hover:scale-105 hover:bg-emerald-600"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-lg">💬</span>
+              <span>WhatsApp</span>
+            </a>
           </div>
         </AuthProvider>
       </body>
