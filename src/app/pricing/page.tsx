@@ -18,6 +18,7 @@ export default function PricingPage() {
         { name: "A3 Large Full Color Page", rate: DEFAULT_PRICING_CONFIG["a3-color"], unit: "page" },
         { name: "Standard Photo Printing", rate: DEFAULT_PRICING_CONFIG["photo-print"], unit: "page" },
         { name: "Passport Photo Print Set", rate: DEFAULT_PRICING_CONFIG["passport-photo"], unit: "8 photos" },
+        { name: "Flex & Banner Printing", rate: DEFAULT_PRICING_CONFIG["banner-print"], unit: "sq ft" },
       ]
     },
     {
@@ -33,6 +34,9 @@ export default function PricingPage() {
         { name: "Visiting Cards (350GSM Matte)", rate: DEFAULT_PRICING_CONFIG["visiting-cards"], unit: "card (base)" },
         { name: "Company Letterheads (100GSM)", rate: DEFAULT_PRICING_CONFIG["letterheads"], unit: "sheet" },
         { name: "A4 Flyers & Folded Brochures", rate: DEFAULT_PRICING_CONFIG["brochures"], unit: "sheet" },
+        { name: "Restaurant Menu Card Printing", rate: DEFAULT_PRICING_CONFIG["menu-print"], unit: "copy" },
+        { name: "Premium Invitation Cards", rate: DEFAULT_PRICING_CONFIG["invitation-print"], unit: "card" },
+        { name: "Corporate Gift Combo Sets", rate: DEFAULT_PRICING_CONFIG["corporate-gift"], unit: "set" },
       ]
     },
     {
@@ -43,6 +47,11 @@ export default function PricingPage() {
         { name: "Cotton Custom Graphic T-Shirt", rate: DEFAULT_PRICING_CONFIG["tshirt-print"], unit: "shirt" },
         { name: "Heavyweight Fleece Hoodie", rate: DEFAULT_PRICING_CONFIG["hoodie-print"], unit: "hoodie" },
         { name: "Cozy Cushion & Pillow Printing", rate: DEFAULT_PRICING_CONFIG["pillow-print"], unit: "pillow" },
+        { name: "Custom Mobile Cover Printing", rate: DEFAULT_PRICING_CONFIG["mobilecover-print"], unit: "cover" },
+        { name: "Personalized Acrylic Keychain", rate: DEFAULT_PRICING_CONFIG["keychain-print"], unit: "keychain" },
+        { name: "Custom Canvas Cap & Hat", rate: DEFAULT_PRICING_CONFIG["cap-print"], unit: "cap" },
+        { name: "Archival Canvas Frame Printing", rate: DEFAULT_PRICING_CONFIG["photoframe-print"], unit: "canvas" },
+        { name: "Custom Rubber Mousepad Printing", rate: DEFAULT_PRICING_CONFIG["mousepad-print"], unit: "mousepad" },
       ]
     },
     {
@@ -50,6 +59,7 @@ export default function PricingPage() {
       items: [
         { name: "High-Speed Document Scanning", rate: DEFAULT_PRICING_CONFIG["scanning"], unit: "page" },
         { name: "Bulk Document Photocopy / Xerox", rate: DEFAULT_PRICING_CONFIG["xerox"], unit: "page" },
+        { name: "Custom Photo Wall Calendars", rate: DEFAULT_PRICING_CONFIG["calendar-print"], unit: "calendar" },
         { name: "ATS Professional Resume Creation", rate: DEFAULT_PRICING_CONFIG["resume-creation"], unit: "flat rate" },
       ]
     }

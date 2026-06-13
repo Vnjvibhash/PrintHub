@@ -33,7 +33,24 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const t = localStorage.getItem('theme') || 'system';
+                  const d = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                  document.documentElement.classList.toggle('dark', d);
+                  document.documentElement.classList.toggle('light', !d);
+                } catch (_) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-[#fafafc] dark:bg-[#07070a] text-[#0f0f15] dark:text-[#f3f4f6]">
         <AuthProvider>
           <div className="relative min-h-screen flex flex-col overflow-hidden">

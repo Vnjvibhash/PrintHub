@@ -40,7 +40,7 @@ export interface SpecificationOptions {
   binding?: 'none' | 'spiral' | 'lamination';
   pages?: number;
   copies?: number;
-  size?: 'S' | 'M' | 'L' | 'XL' | 'XXL';
+  size?: string;
   color?: string;
   customText?: string;
   customImageUrl?: string;

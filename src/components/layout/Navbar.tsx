@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -15,7 +15,10 @@ import {
   Lock, 
   ChevronDown, 
   HelpCircle,
-  FileText
+  FileText,
+  Sun,
+  Moon,
+  Monitor
 } from "lucide-react";
 
 export default function Navbar() {
@@ -23,6 +26,50 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isQuickLoginOpen, setIsQuickLoginOpen] = useState(false);
+
+  type Theme = "light" | "dark" | "system";
+  const [theme, setTheme] = useState<Theme>("system");
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = (localStorage.getItem("theme") as Theme) || "system";
+    setTheme(savedTheme);
+    applyTheme(savedTheme);
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleSystemThemeChange = () => {
+      const currentTheme = localStorage.getItem("theme") || "system";
+      if (currentTheme === "system") {
+        applyTheme("system");
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleSystemThemeChange);
+    return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
+  }, []);
+
+  const applyTheme = (t: Theme) => {
+    if (typeof window === "undefined") return;
+    const root = document.documentElement;
+    if (t === "dark") {
+      root.classList.add("dark");
+      root.classList.remove("light");
+    } else if (t === "light") {
+      root.classList.add("light");
+      root.classList.remove("dark");
+    } else {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      root.classList.toggle("dark", isDark);
+      root.classList.toggle("light", !isDark);
+    }
+  };
+
+  const handleThemeChange = (newTheme: Theme) => {
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    applyTheme(newTheme);
+    setIsThemeMenuOpen(false);
+  };
   const pathname = usePathname();
   const router = useRouter();
 

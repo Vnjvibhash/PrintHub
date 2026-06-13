@@ -2,13 +2,14 @@ import { PriceBreakdown, SpecificationOptions } from "@/types";
 
 // Standard base prices (can be modified by Admin in DB / local storage settings)
 export const DEFAULT_PRICING_CONFIG = {
-  // Printing rates (per page)
+  // Printing rates (per page / sq ft)
   "a4-bw": 2,
   "a4-color": 10,
   "a3-bw": 5,
   "a3-color": 20,
   "photo-print": 15,
   "passport-photo": 50, // Per set of 8 photos
+  "banner-print": 40,   // Per sq ft
 
   // Binding & Lamination options
   "binding-spiral": 40,
@@ -29,11 +30,16 @@ export const DEFAULT_PRICING_CONFIG = {
   "keychain-print": 60,
   "mobilecover-print": 180,
   "photoframe-print": 300,
+  "cap-print": 120,
 
   // Corporate business service prices
   "visiting-cards": 1.5,
   "letterheads": 4,
   "brochures": 8,
+  "menu-print": 15,
+  "invitation-print": 25,
+  "calendar-print": 180,
+  "corporate-gift": 450,
 };
 
 export function calculatePricing(
@@ -88,13 +94,28 @@ export function calculatePricing(
     subtotal = (ratePerPage * pages + optionsPrice) * copies * qty;
   } 
   // B. Custom Merchandise
-  else if (["mug-print", "magic-mug", "tshirt-print", "hoodie-print", "pillow-print"].includes(serviceId)) {
+  else if ([
+    "mug-print", 
+    "magic-mug", 
+    "tshirt-print", 
+    "hoodie-print", 
+    "pillow-print",
+    "cap-print",
+    "keychain-print",
+    "mobilecover-print",
+    "photoframe-print",
+    "mousepad-print"
+  ].includes(serviceId)) {
     // Merch calculation
     let merchBase = basePrice;
     
     // Modifiers for customized text or size overrides if any
     if (specs.size === "XL" || specs.size === "XXL") {
-      optionsPrice += 50; // Extra charge for large sizes
+      optionsPrice += 50; // Extra charge for large apparel sizes
+    } else if (specs.size === "12x18") {
+      optionsPrice += 100; // Extra charge for medium canvas
+    } else if (specs.size === "18x24") {
+      optionsPrice += 250; // Extra charge for large canvas
     }
     
     subtotal = (merchBase + optionsPrice) * qty;

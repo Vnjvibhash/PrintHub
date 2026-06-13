@@ -79,17 +79,28 @@ const DEFAULT_SERVICES: ServiceItem[] = [
   { id: "passport-photo", name: "Passport Photo Printing", category: "printing", description: "Standard passport size photo set (8 photos) with background editing.", basePrice: 50, features: ["8 Photos per sheet", "Biometric compliant", "Glossy cutouts"], image: "/images/passport.jpg" },
   { id: "spiral-binding", name: "Spiral Binding", category: "printing", description: "Robust spiral coil binding with clear cover sheet and black back card.", basePrice: 40, features: ["Up to 300 pages", "Flexible plastic coil", "Clear front cover"], image: "/images/spiral.jpg" },
   { id: "lamination", name: "Lamination", category: "printing", description: "Thermal plastic lamination to protect documents from water and tearing.", basePrice: 20, features: ["Heavy duty plastic pouches", "Waterproof and tearproof", "Glossy transparent look"], image: "/images/lamination.jpg" },
+  { id: "banner-print", name: "Flex & Banner Printing", category: "printing", description: "High-durability outdoor flex banners and promotional advertising banners.", basePrice: 40, features: ["12oz premium heavy vinyl", "Weatherproof and UV-resistant", "Includes metal grommets"], image: "/images/banner.jpg" },
 
   // Business Services
   { id: "visiting-cards", name: "Business & Visiting Cards", category: "business", description: "Standard 350GSM business cards with matte/gloss lamination.", basePrice: 1.5, features: ["350 GSM premium cardstock", "Single or double sided", "Matte/Gloss finishing"], image: "/images/cards.jpg" },
   { id: "letterheads", name: "Company Letterheads", category: "business", description: "Professional executive letterheads on premium 100GSM royal executive paper.", basePrice: 4, features: ["100 GSM premium paper", "High resolution company logo", "Executive finish"], image: "/images/letterhead.jpg" },
   { id: "brochures", name: "Flyers & Brochures", category: "business", description: "A4 bi-fold or tri-fold advertising brochures with vibrant color.", basePrice: 8, features: ["130 GSM art paper", "Folded layout", "Vibrant graphic colors"], image: "/images/brochure.jpg" },
+  { id: "menu-print", name: "Restaurant Menu Card Printing", category: "business", description: "Premium restaurant menu sheet or folded booklet printing with moisture protection.", basePrice: 15, features: ["300 GSM royal cardstock", "Gloss/Matte lamination coating", "Spill & moisture resistant"], image: "/images/menu.jpg" },
+  { id: "invitation-print", name: "Premium Invitation Card Printing", category: "business", description: "Exquisite wedding, birthday, and party invitation card printing.", basePrice: 25, features: ["Textured executive paper", "Complimentary envelope wrap", "Vibrant colors & hot stamping"], image: "/images/invitation.jpg" },
+  { id: "calendar-print", name: "Custom Photo Wall Calendars", category: "business", description: "Personalized wall/desk calendars featuring custom photos for each month.", basePrice: 180, features: ["12-month page sheets", "Wiro spiral binder hang hook", "Sturdy premium paper stock"], image: "/images/calendar.jpg" },
+  { id: "corporate-gift", name: "Corporate Gift Printing & Combo Sets", category: "business", description: "Embossed diaries, engraved metal pens, and premium customized gift combos.", basePrice: 450, features: ["Engraved executive metal pen", "Leatherette diary notebook", "Premium customized gift box"], image: "/images/corporate-gift.jpg" },
 
   // Custom Merchandise
   { id: "mug-print", name: "Custom Mug Printing", category: "merchandise", description: "Personalized ceramic coffee mugs with wrap-around photo prints.", basePrice: 150, features: ["325ml premium ceramic", "Microwave and dishwasher safe", "Glossy dynamic wrap"], image: "/images/mug.jpg" },
   { id: "magic-mug", name: "Magic Mug Printing", category: "merchandise", description: "Color-changing ceramic mugs that reveal your design when hot liquids are added.", basePrice: 250, features: ["Heat-sensitive coating", "Black finish turns white", "Wow-factor gift"], image: "/images/magic-mug.jpg" },
   { id: "tshirt-print", name: "Custom T-Shirt Printing", category: "merchandise", description: "Premium cotton round-neck T-shirts with customized DTF graphics.", basePrice: 350, features: ["100% combed cotton", "High durability print", "Multiple color options"], image: "/images/tshirt.jpg" },
   { id: "hoodie-print", name: "Custom Hoodie Printing", category: "merchandise", description: "Warm and cozy fleece-lined hoodies with custom graphics or embroidery.", basePrice: 750, features: ["300 GSM fleece cotton", "Kangaroo pockets", "Durable wash-safe print"], image: "/images/hoodie.jpg" },
+  { id: "pillow-print", name: "Custom Cushion/Pillow Printing", category: "merchandise", description: "Cozy custom throw pillows and cushion covers with premium soft fillers.", basePrice: 200, features: ["Satin canvas covers", "Soft fiber filler included", "Vivid photo sublimation"], image: "/images/pillow.jpg" },
+  { id: "mobilecover-print", name: "Custom Mobile Cover Printing", category: "merchandise", description: "Edge-to-edge personalized 3D wrap hard cases for popular phone models.", basePrice: 180, features: ["polycarbonate slim case", "3D wrap print covers sides", "Scratch-resistant matte finish"], image: "/images/mobilecover.jpg" },
+  { id: "keychain-print", name: "Personalized Keychain Printing", category: "merchandise", description: "Premium clear acrylic or wooden keychains customized with photos or logo.", basePrice: 60, features: ["Glossy acrylic display", "Sturdy metal chain ring", "Double-sided full print"], image: "/images/keychain.jpg" },
+  { id: "cap-print", name: "Custom Cap & Hat Printing", category: "merchandise", description: "Printed or embroidered sports caps for branding and promotions.", basePrice: 120, features: ["100% breathable cotton", "Adjustable secure strap", "Vivid logo embroidery"], image: "/images/cap.jpg" },
+  { id: "photoframe-print", name: "Archival Canvas Frame Printing", category: "merchandise", description: "Museum-grade canvas material stretched onto a sturdy wooden internal frames.", basePrice: 300, features: ["Premium textured canvas", "Wooden gallery wrapped border", "Pre-installed hangers"], image: "/images/canvas.jpg" },
+  { id: "mousepad-print", name: "Custom Rubber Mousepad Printing", category: "merchandise", description: "Smooth textured custom mousepads with anti-slip rubber bases.", basePrice: 120, features: ["High-speed smooth cloth surface", "Anti-fray stitched edges", "Steady heavy rubber grip"], image: "/images/mousepad.jpg" },
 
   // Document Services
   { id: "scanning", name: "Document Scanning & Archiving", category: "documents", description: "High-speed document scanning to PDF/JPEG and cloud storage backup.", basePrice: 5, features: ["Up to 600 DPI", "Multi-page PDF compilation", "OCR text searchable (optional)"], image: "/images/scan.jpg" },
@@ -103,6 +114,11 @@ const DEFAULT_PRODUCTS: ProductItem[] = [
   { id: "prod-tshirt", name: "Premium cotton T-Shirt", type: "tshirt", basePrice: 350, imageUrl: "/images/tshirt.jpg", colors: ["#ffffff", "#000000", "#18181b", "#ef4444", "#3b82f6", "#10b981"], sizes: ["S", "M", "L", "XL", "XXL"] },
   { id: "prod-hoodie", name: "Heavyweight Fleece Hoodie", type: "hoodie", basePrice: 750, imageUrl: "/images/hoodie.jpg", colors: ["#ffffff", "#000000", "#374151", "#3b82f6"], sizes: ["M", "L", "XL", "XXL"] },
   { id: "prod-pillow", name: "Cozy Cushion/Pillow", type: "pillow", basePrice: 200, imageUrl: "/images/pillow.jpg", colors: ["#ffffff", "#fef08a", "#fbcfe8"] },
+  { id: "prod-mobilecover", name: "Slim Fit 3D Phone Case", type: "mobilecover", basePrice: 180, imageUrl: "/images/mobilecover.jpg", colors: ["#ffffff", "#000000", "#1e3a8a", "#e11d48"] },
+  { id: "prod-keychain", name: "Custom Acrylic Keychain", type: "keychain", basePrice: 60, imageUrl: "/images/keychain.jpg", colors: ["#ffffff", "#ef4444", "#eab308", "#10b981"] },
+  { id: "prod-cap", name: "Adjustable Snapback Canvas Cap", type: "cap", basePrice: 120, imageUrl: "/images/cap.jpg", colors: ["#ffffff", "#000000", "#1e3a8a", "#e11d48"], sizes: ["Adjustable"] },
+  { id: "prod-photoframe", name: "Stretched Canvas Art Frame", type: "photoframe", basePrice: 300, imageUrl: "/images/canvas.jpg", colors: ["#ffffff"], sizes: ["12x12", "12x18", "18x24"] },
+  { id: "prod-mousepad", name: "Premium Non-Slip Mousepad", type: "mousepad", basePrice: 120, imageUrl: "/images/mousepad.jpg", colors: ["#ffffff", "#000000", "#374151"] },
 ];
 
 // Prepopulate localStorage for Mocks
@@ -120,12 +136,32 @@ const setLocalData = (key: string, data: any) => {
 const initLocalDatabase = () => {
   if (typeof window === "undefined") return;
   
-  if (!getLocalData("services")) {
+  const existingServices = getLocalData("services");
+  if (!existingServices) {
     setLocalData("services", DEFAULT_SERVICES);
+  } else {
+    // Merge any missing services
+    const missing = DEFAULT_SERVICES.filter(
+      (ds) => !existingServices.some((cs: any) => cs.id === ds.id)
+    );
+    if (missing.length > 0) {
+      setLocalData("services", [...existingServices, ...missing]);
+    }
   }
-  if (!getLocalData("products")) {
+
+  const existingProducts = getLocalData("products");
+  if (!existingProducts) {
     setLocalData("products", DEFAULT_PRODUCTS);
+  } else {
+    // Merge any missing products
+    const missing = DEFAULT_PRODUCTS.filter(
+      (dp) => !existingProducts.some((cp: any) => cp.id === dp.id)
+    );
+    if (missing.length > 0) {
+      setLocalData("products", [...existingProducts, ...missing]);
+    }
   }
+
   if (!getLocalData("settings")) {
     setLocalData("settings", {
       gstNumber: "27AAAAA1111A1Z1",

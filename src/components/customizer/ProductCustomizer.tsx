@@ -8,7 +8,7 @@ import { Check, Type, Image as ImageIcon, Sparkles, ShoppingCart, RefreshCw, Zoo
 import { dbService } from "@/lib/firebase";
 
 interface ProductCustomizerProps {
-  initialType?: 'mug' | 'pillow' | 'tshirt' | 'hoodie';
+  initialType?: 'mug' | 'pillow' | 'tshirt' | 'hoodie' | 'cap' | 'mousepad' | 'keychain' | 'mobilecover' | 'photoframe';
   onAddToCart?: (customSpecs: {
     serviceId: string;
     serviceName: string;
@@ -20,7 +20,7 @@ interface ProductCustomizerProps {
 
 export default function ProductCustomizer({ initialType = "tshirt", onAddToCart }: ProductCustomizerProps) {
   const [products, setProducts] = useState<ProductItem[]>([]);
-  const [selectedType, setSelectedType] = useState<'mug' | 'pillow' | 'tshirt' | 'hoodie'>(initialType);
+  const [selectedType, setSelectedType] = useState<'mug' | 'pillow' | 'tshirt' | 'hoodie' | 'cap' | 'mousepad' | 'keychain' | 'mobilecover' | 'photoframe'>(initialType);
   const [selectedColor, setSelectedColor] = useState<string>("#ffffff");
   const [selectedSize, setSelectedSize] = useState<string>("M");
   const [quantity, setQuantity] = useState<number>(1);
@@ -51,9 +51,18 @@ export default function ProductCustomizer({ initialType = "tshirt", onAddToCart 
 
   // Recalculate price dynamically when specs change
   useEffect(() => {
-    const serviceId = selectedType === "mug" ? "mug-print" : 
-                      selectedType === "tshirt" ? "tshirt-print" : 
-                      selectedType === "hoodie" ? "hoodie-print" : "pillow-print";
+    const serviceIdMap: Record<string, string> = {
+      "mug": "mug-print",
+      "tshirt": "tshirt-print",
+      "hoodie": "hoodie-print",
+      "pillow": "pillow-print",
+      "cap": "cap-print",
+      "keychain": "keychain-print",
+      "mobilecover": "mobilecover-print",
+      "photoframe": "photoframe-print",
+      "mousepad": "mousepad-print"
+    };
+    const serviceId = serviceIdMap[selectedType] || "tshirt-print";
                       
     const specs: SpecificationOptions = {
       size: selectedSize as any,
@@ -68,14 +77,18 @@ export default function ProductCustomizer({ initialType = "tshirt", onAddToCart 
 
   const activeProduct = products.find(p => p.type === selectedType);
 
-  const handleTypeChange = (type: 'mug' | 'pillow' | 'tshirt' | 'hoodie') => {
+  const handleTypeChange = (type: 'mug' | 'pillow' | 'tshirt' | 'hoodie' | 'cap' | 'mousepad' | 'keychain' | 'mobilecover' | 'photoframe') => {
     setSelectedType(type);
     const matched = products.find(p => p.type === type);
     if (matched && matched.colors.length > 0) {
       setSelectedColor(matched.colors[0]);
     }
-    if (type === "mug") {
+    if (type === "mug" || type === "keychain" || type === "mobilecover" || type === "mousepad") {
       setSelectedSize("Standard");
+    } else if (type === "photoframe") {
+      setSelectedSize("12x12");
+    } else if (type === "cap") {
+      setSelectedSize("Adjustable");
     } else {
       setSelectedSize("M");
     }
@@ -96,13 +109,31 @@ export default function ProductCustomizer({ initialType = "tshirt", onAddToCart 
   const handleAddToCart = () => {
     if (!priceBreakdown) return;
     
-    const serviceId = selectedType === "mug" ? "mug-print" : 
-                      selectedType === "tshirt" ? "tshirt-print" : 
-                      selectedType === "hoodie" ? "hoodie-print" : "pillow-print";
+    const serviceIdMap: Record<string, string> = {
+      "mug": "mug-print",
+      "tshirt": "tshirt-print",
+      "hoodie": "hoodie-print",
+      "pillow": "pillow-print",
+      "cap": "cap-print",
+      "keychain": "keychain-print",
+      "mobilecover": "mobilecover-print",
+      "photoframe": "photoframe-print",
+      "mousepad": "mousepad-print"
+    };
+    const serviceId = serviceIdMap[selectedType] || "tshirt-print";
                       
-    const serviceName = selectedType === "mug" ? "Custom Mug Printing" : 
-                        selectedType === "tshirt" ? "Custom T-Shirt Printing" : 
-                        selectedType === "hoodie" ? "Custom Hoodie Printing" : "Custom Cushion/Pillow Printing";
+    const serviceNameMap: Record<string, string> = {
+      "mug": "Custom Mug Printing",
+      "tshirt": "Custom T-Shirt Printing",
+      "hoodie": "Custom Hoodie Printing",
+      "pillow": "Custom Cushion/Pillow Printing",
+      "cap": "Custom Cap & Hat Printing",
+      "keychain": "Personalized Keychain Printing",
+      "mobilecover": "Custom Mobile Cover Printing",
+      "photoframe": "Archival Canvas Frame Printing",
+      "mousepad": "Custom Rubber Mousepad Printing"
+    };
+    const serviceName = serviceNameMap[selectedType] || "Custom T-Shirt Printing";
 
     if (onAddToCart) {
       onAddToCart({
@@ -129,6 +160,16 @@ export default function ProductCustomizer({ initialType = "tshirt", onAddToCart 
         return "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400&q=80"; // Soft white square cushion layout
       case "hoodie":
         return "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&q=80"; // Standard front-view hoodie layout
+      case "cap":
+        return "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&q=80"; // Cap mockup
+      case "keychain":
+        return "https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&q=80"; // Keychain mockup
+      case "mobilecover":
+        return "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&q=80"; // Phone mockup
+      case "photoframe":
+        return "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=400&q=80"; // Canvas art frame mockup
+      case "mousepad":
+        return "https://images.unsplash.com/photo-1541140111813-8222e9d90981?w=400&q=80"; // Mousepad mockup
       case "tshirt":
       default:
         return "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&q=80"; // Standard front-view crewneck shirt layout
@@ -161,6 +202,16 @@ export default function ProductCustomizer({ initialType = "tshirt", onAddToCart 
                 ? "w-[80px] h-[100px] left-[45%] top-[40%]" 
                 : selectedType === "pillow"
                 ? "w-[120px] h-[120px] left-[36%] top-[35%]"
+                : selectedType === "cap"
+                ? "w-[50px] h-[45px] left-[44%] top-[41%]"
+                : selectedType === "keychain"
+                ? "w-[50px] h-[55px] left-[44%] top-[38%]"
+                : selectedType === "mobilecover"
+                ? "w-[80px] h-[120px] left-[40%] top-[28%]"
+                : selectedType === "photoframe"
+                ? "w-[150px] h-[150px] left-[32%] top-[25%]"
+                : selectedType === "mousepad"
+                ? "w-[150px] h-[100px] left-[32%] top-[34%]"
                 : "w-[110px] h-[140px] left-[38%] top-[32%]"
             }`}
           >
@@ -224,18 +275,21 @@ export default function ProductCustomizer({ initialType = "tshirt", onAddToCart 
           {/* 1. Select Product Type Tabs */}
           <div>
             <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Merchandise Type</label>
-            <div className="grid grid-cols-4 gap-2">
-              {(["tshirt", "hoodie", "mug", "pillow"] as const).map((t) => (
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 gap-2">
+              {(["tshirt", "hoodie", "mug", "pillow", "cap", "keychain", "mobilecover", "photoframe", "mousepad"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => handleTypeChange(t)}
-                  className={`py-2 px-1 rounded-xl text-center border text-xs font-bold capitalize transition-all ${
+                  className={`py-2 px-1 rounded-xl text-center border text-[10px] sm:text-xs font-bold capitalize transition-all ${
                     selectedType === t
-                      ? "border-indigo-500 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400"
+                      ? "border-indigo-500 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 animate-pulse-slow"
                       : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
                   }`}
                 >
-                  {t === "tshirt" ? "T-Shirt" : t}
+                  {t === "tshirt" ? "T-Shirt" : 
+                   t === "photoframe" ? "Canvas Frame" : 
+                   t === "mobilecover" ? "Phone Case" : 
+                   t === "mousepad" ? "Mousepad" : t}
                 </button>
               ))}
             </div>
@@ -267,15 +321,17 @@ export default function ProductCustomizer({ initialType = "tshirt", onAddToCart 
           )}
 
           {/* 3. Choose Sizing Options */}
-          {selectedType !== "mug" && activeProduct && (
+          {selectedType !== "mug" && selectedType !== "keychain" && selectedType !== "mobilecover" && selectedType !== "mousepad" && activeProduct && (
             <div>
-              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Select Size</label>
-              <div className="flex space-x-2">
+              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                {selectedType === "photoframe" ? "Canvas Size" : "Select Size"}
+              </label>
+              <div className="flex flex-wrap gap-2">
                 {(activeProduct.sizes || ["S", "M", "L", "XL", "XXL"]).map((sz) => (
                   <button
                     key={sz}
                     onClick={() => setSelectedSize(sz)}
-                    className={`w-10 h-10 rounded-xl border flex items-center justify-center text-xs font-bold transition-all ${
+                    className={`h-10 px-3 rounded-xl border flex items-center justify-center text-xs font-bold transition-all ${
                       selectedSize === sz
                         ? "border-indigo-500 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400"
                         : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"

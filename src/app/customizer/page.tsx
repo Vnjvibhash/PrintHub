@@ -13,8 +13,9 @@ function CustomizerContent() {
   
   // Accept default merchandise type via URL parameters (e.g., /customizer?type=mug)
   const defaultTypeParam = searchParams.get("type") || "tshirt";
-  const type = ["tshirt", "hoodie", "mug", "pillow"].includes(defaultTypeParam)
-    ? (defaultTypeParam as 'tshirt' | 'hoodie' | 'mug' | 'pillow')
+  const allowedTypes = ["tshirt", "hoodie", "mug", "pillow", "cap", "mousepad", "keychain", "mobilecover", "photoframe"];
+  const type = allowedTypes.includes(defaultTypeParam)
+    ? (defaultTypeParam as any)
     : "tshirt";
 
   const handleAddToCart = (data: any) => {

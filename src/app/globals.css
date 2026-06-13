@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode configuration for Tailwind CSS v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-brand-50: #f5f3ff;
   --color-brand-100: #ede9fe;
@@ -39,8 +42,9 @@
   --primary-glow: rgba(79, 70, 229, 0.15);
 }
 
+/* System dark preference fallback */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --background: #07070a;
     --foreground: #f3f4f6;
     --card-bg: rgba(15, 15, 25, 0.7);
@@ -48,6 +52,26 @@
     --primary: #6366f1;
     --primary-glow: rgba(99, 102, 241, 0.25);
   }
+}
+
+/* Manual Light mode overrides */
+:root.light {
+  --background: #fafafc;
+  --foreground: #0f0f15;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(0, 0, 0, 0.06);
+  --primary: #4f46e5;
+  --primary-glow: rgba(79, 70, 229, 0.15);
+}
+
+/* Manual Dark mode overrides */
+:root.dark {
+  --background: #07070a;
+  --foreground: #f3f4f6;
+  --card-bg: rgba(15, 15, 25, 0.7);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --primary: #6366f1;
+  --primary-glow: rgba(99, 102, 241, 0.25);
 }
 
 * {
