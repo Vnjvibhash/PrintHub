@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import HeroCarousel from "@/components/home/HeroCarousel";
 import { motion } from "framer-motion";
 import { 
   Upload, 
@@ -57,62 +58,8 @@ export default function Home() {
     <>
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-24 md:pt-28 md:pb-32 overflow-hidden flex flex-col items-center text-center px-4 max-w-7xl mx-auto w-full">
-        {/* Decorative background glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-indigo-500/10 dark:bg-indigo-500/5 blur-3xl pointer-events-none rounded-full" />
-        
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-6"
-        >
-          <Zap className="h-3.5 w-3.5" />
-          <span>Super Fast Printing & Custom Merchandise</span>
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-zinc-900 dark:text-white max-w-4xl leading-[1.15]"
-        >
-          Print <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600">Anything, Anytime</span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-6 text-base sm:text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl leading-relaxed"
-        >
-          Instant A4/A3 documents, corporate visiting cards, high-definition scanning, and personalized custom gifts like Mugs, Pillows, and Hoodies.
-        </motion.p>
-
-        {/* Hero CTAs */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
-        >
-          <Link
-            href="/services"
-            className="flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-indigo-500/20"
-          >
-            <Upload className="h-5 w-5" />
-            <span>Upload File & Order</span>
-          </Link>
-          <Link
-            href="/customizer"
-            className="flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 text-zinc-700 dark:text-zinc-200 font-semibold transition"
-          >
-            <span>Customize Merchandise</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </motion.div>
-      </section>
+      {/* Hero Carousel */}
+      <HeroCarousel />
 
       {/* Popular Services Section */}
       <section className="py-20 bg-zinc-50/50 dark:bg-zinc-950/20 border-y border-zinc-100 dark:border-zinc-900/50">

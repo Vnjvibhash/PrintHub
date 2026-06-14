@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -14,49 +14,55 @@ import {
   Shield, 
   Lock, 
   ChevronDown, 
-  HelpCircle,
-  FileText,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Check
 } from "lucide-react";
 
-export default function Navbar() {
-  const { user, signIn, signOut, loading } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isQuickLoginOpen, setIsQuickLoginOpen] = useState(false);
+type Theme = "light" | "dark" | "system";
 
-  type Theme = "light" | "dark" | "system";
+function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("system");
-  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const savedTheme = (localStorage.getItem("theme") as Theme) || "system";
-    setTheme(savedTheme);
-    applyTheme(savedTheme);
+    setMounted(true);
+    const saved = (localStorage.getItem("theme") as Theme) || "system";
+    setTheme(saved);
 
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleSystemThemeChange = () => {
-      const currentTheme = localStorage.getItem("theme") || "system";
-      if (currentTheme === "system") {
+    // Listen for system preference changes
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onSystem = () => {
+      if ((localStorage.getItem("theme") || "system") === "system") {
         applyTheme("system");
       }
     };
+    mq.addEventListener("change", onSystem);
+    return () => mq.removeEventListener("change", onSystem);
+  }, []);
 
-    mediaQuery.addEventListener("change", handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const applyTheme = (t: Theme) => {
-    if (typeof window === "undefined") return;
     const root = document.documentElement;
     if (t === "dark") {
       root.classList.add("dark");
       root.classList.remove("light");
     } else if (t === "light") {
-      root.classList.add("light");
       root.classList.remove("dark");
+      root.classList.add("light");
     } else {
       const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       root.classList.toggle("dark", isDark);
@@ -64,12 +70,68 @@ export default function Navbar() {
     }
   };
 
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    applyTheme(newTheme);
-    setIsThemeMenuOpen(false);
+  const handleSelect = (t: Theme) => {
+    setTheme(t);
+    localStorage.setItem("theme", t);
+    applyTheme(t);
+    setIsOpen(false);
   };
+
+  const getIcon = () => {
+    if (!mounted) return <Monitor className="h-4 w-4" />;
+    if (theme === "dark") return <Moon className="h-4 w-4" />;
+    if (theme === "light") return <Sun className="h-4 w-4" />;
+    return <Monitor className="h-4 w-4" />;
+  };
+
+  const options: { value: Theme; label: string; icon: React.ReactNode }[] = [
+    { value: "light",  label: "Light",  icon: <Sun className="h-4 w-4 text-amber-500" /> },
+    { value: "dark",   label: "Dark",   icon: <Moon className="h-4 w-4 text-indigo-400" /> },
+    { value: "system", label: "System", icon: <Monitor className="h-4 w-4 text-zinc-500" /> },
+  ];
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle theme"
+        title="Change theme"
+        className="relative flex items-center justify-center w-9 h-9 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-800/60 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-zinc-600 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 shadow-sm backdrop-blur-sm"
+      >
+        <span className="transition-transform duration-300">
+          {getIcon()}
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-40 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl shadow-black/10 dark:shadow-black/40 py-1.5 z-[60] overflow-hidden animate-[fadeSlideDown_0.15s_ease-out]">
+          <p className="px-3 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Appearance</p>
+          {options.map(({ value, label, icon }) => (
+            <button
+              key={value}
+              onClick={() => handleSelect(value)}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium transition-colors ${
+                theme === value
+                  ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400"
+                  : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
+              }`}
+            >
+              {icon}
+              <span>{label}</span>
+              {theme === value && <Check className="h-3.5 w-3.5 ml-auto text-indigo-500" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function Navbar() {
+  const { user, signIn, signOut, loading } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isQuickLoginOpen, setIsQuickLoginOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -129,8 +191,14 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Auth Controls */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Right side: Theme Toggle + Auth Controls */}
+          <div className="hidden md:flex items-center space-x-3">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* Separator */}
+            <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700" />
+
             {loading ? (
               <div className="h-8 w-24 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-md" />
             ) : user ? (
@@ -149,7 +217,7 @@ export default function Navbar() {
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl py-2 z-50 animate-fade-in text-zinc-700 dark:text-zinc-200">
+                  <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl py-2 z-50 text-zinc-700 dark:text-zinc-200">
                     <div className="px-4 py-2 border-b border-zinc-100 dark:border-zinc-800">
                       <p className="text-xs text-zinc-400 uppercase tracking-wider">Signed in as</p>
                       <p className="text-sm font-semibold truncate">{user.email}</p>
@@ -230,15 +298,17 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile: Theme + Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
+            <ThemeToggle />
+
             {!user && !loading && (
               <button
                 onClick={() => setIsQuickLoginOpen(!isQuickLoginOpen)}
                 className="flex items-center space-x-1 px-2.5 py-1 rounded border border-indigo-500/20 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 text-xs font-semibold"
               >
                 <Lock className="w-3 h-3" />
-                <span>Quick Login</span>
+                <span>Login</span>
               </button>
             )}
             
@@ -252,7 +322,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Options */}
+      {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/95 py-3 px-4 space-y-2">
           {navLinks.map((link) => (
@@ -313,7 +383,7 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Mobile Developer Quick Login Dropdown */}
+      {/* Mobile Developer Quick Login */}
       {isQuickLoginOpen && !user && (
         <div className="md:hidden absolute right-4 top-16 w-52 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl py-2 z-50 text-zinc-700 dark:text-zinc-200">
           <div className="px-4 py-1.5 text-xs text-zinc-400 border-b border-zinc-100 dark:border-zinc-800 mb-1">
