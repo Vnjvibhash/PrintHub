@@ -143,3 +143,47 @@ export interface ReviewRecord {
   serviceId: string;
   createdAt: string;
 }
+
+export type CarouselAccentColor = 'indigo' | 'emerald' | 'purple' | 'amber';
+
+export interface CarouselSlide {
+  id: string;
+  tag: string;
+  tagColor: string;
+  headline: string;
+  highlight: string;
+  sub: string;
+  ctaLabel: string;
+  ctaHref: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
+  accentColor: CarouselAccentColor;
+  iconName: string;
+  stats: { value: string; label: string }[];
+  isActive: boolean;
+  order: number;
+}
+
+export interface OfferRecord {
+  id: string;
+  name: string;
+  description: string;
+  discountType: 'percentage' | 'flat';
+  discountValue: number;
+  applicableServiceIds: string[]; // empty array = applies to all services
+  minOrderValue?: number;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface BusinessSettings {
+  gstNumber: string;
+  companyName: string;
+  companyAddress: string;
+  taxRate: number;
+  upiId: string;
+  contactEmail: string;
+  rates?: Record<string, number>;
+}

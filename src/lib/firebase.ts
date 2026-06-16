@@ -32,7 +32,7 @@ import {
   getDownloadURL,
   type FirebaseStorage
 } from "firebase/storage";
-import { UserProfile, ServiceItem, ProductItem, Order, NotificationRecord } from "@/types";
+import { UserProfile, ServiceItem, ProductItem, Order, NotificationRecord, CarouselSlide, OfferRecord } from "@/types";
 
 // 1. Firebase Configuration Detection
 const firebaseConfig = {
@@ -203,6 +203,102 @@ const initLocalDatabase = () => {
   }
 
   // Prepopulate sample order history for demonstration
+  // Carousel slides
+  if (!getLocalData("carousel")) {
+    const defaultSlides: CarouselSlide[] = [
+      {
+        id: "slide-document-print",
+        tag: "⚡ Super Fast",
+        tagColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+        headline: "Print Documents,",
+        highlight: "Instantly.",
+        sub: "A4 & A3 documents, reports, theses — B&W or full color. Ready within the hour.",
+        ctaLabel: "Upload & Order Now",
+        ctaHref: "/services",
+        secondaryCtaLabel: "View Pricing",
+        secondaryCtaHref: "/pricing",
+        accentColor: "indigo",
+        iconName: "Printer",
+        stats: [
+          { value: "₹2", label: "per A4 B&W page" },
+          { value: "₹10", label: "per A4 color page" },
+          { value: "1 hr", label: "average turnaround" },
+        ],
+        isActive: true,
+        order: 0,
+      },
+      {
+        id: "slide-business-cards",
+        tag: "💼 Corporate",
+        tagColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+        headline: "Premium Business",
+        highlight: "Cards & Stationery.",
+        sub: "350GSM matte & glossy finish cards, letterheads, envelopes, and brochures for your brand.",
+        ctaLabel: "Design Your Cards",
+        ctaHref: "/services",
+        secondaryCtaLabel: "Bulk Quote",
+        secondaryCtaHref: "/pricing",
+        accentColor: "emerald",
+        iconName: "Layers",
+        stats: [
+          { value: "₹1.5", label: "per card" },
+          { value: "500+", label: "minimum for bulk" },
+          { value: "350gsm", label: "premium cardstock" },
+        ],
+        isActive: true,
+        order: 1,
+      },
+      {
+        id: "slide-custom-merch",
+        tag: "🎁 Trending Now",
+        tagColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+        headline: "Custom Merchandise",
+        highlight: "Made to Order.",
+        sub: "T-shirts, hoodies, caps, mugs, cushions, mobile covers and more — print your design on anything.",
+        ctaLabel: "Start Customizing",
+        ctaHref: "/customizer",
+        secondaryCtaLabel: "See All Merch",
+        secondaryCtaHref: "/services",
+        accentColor: "purple",
+        iconName: "Sparkles",
+        stats: [
+          { value: "20+", label: "product types" },
+          { value: "₹150", label: "starting price" },
+          { value: "DTF", label: "premium print tech" },
+        ],
+        isActive: true,
+        order: 2,
+      },
+      {
+        id: "slide-gifts",
+        tag: "🎀 Perfect Gifts",
+        tagColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+        headline: "Personalized Gifts",
+        highlight: "They'll Love.",
+        sub: "Magic mugs, canvas prints, photo pillows, keychains, and more — perfect for every occasion.",
+        ctaLabel: "Browse Gift Ideas",
+        ctaHref: "/customizer",
+        secondaryCtaLabel: "Corporate Gifts",
+        secondaryCtaHref: "/services",
+        accentColor: "amber",
+        iconName: "Gift",
+        stats: [
+          { value: "100%", label: "custom printed" },
+          { value: "₹150", label: "mugs starting at" },
+          { value: "Next day", label: "dispatch available" },
+        ],
+        isActive: true,
+        order: 3,
+      },
+    ];
+    setLocalData("carousel", defaultSlides);
+  }
+
+  // Offers
+  if (!getLocalData("offers")) {
+    setLocalData("offers", [] as OfferRecord[]);
+  }
+
   if (!getLocalData("orders")) {
     const defaultOrders: Order[] = [
       {
@@ -544,6 +640,22 @@ export const dbService = {
           mapData[docId] = { ...mapData[docId], ...updateData };
           setLocalData(collName, mapData);
         }
+      }
+    }
+  },
+
+  // Delete document
+  deleteDocument: async (collName: string, docId: string): Promise<void> => {
+    if (isFirebaseEnabled) {
+      await deleteDoc(doc(firebaseDb!, collName, docId));
+    } else {
+      const collectionData = getLocalData(collName);
+      if (Array.isArray(collectionData)) {
+        const filtered = collectionData.filter((item: any) => item.id !== docId);
+        setLocalData(collName, filtered);
+      } else if (collectionData && typeof collectionData === "object") {
+        delete collectionData[docId];
+        setLocalData(collName, collectionData);
       }
     }
   },
