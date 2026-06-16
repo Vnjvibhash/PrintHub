@@ -15,7 +15,10 @@ import {
   Coffee,
   ChevronLeft,
   ChevronRight,
+  Image,
 } from "lucide-react";
+import { dbService } from "@/lib/firebase";
+import { CarouselSlide } from "@/types";
 
 interface Slide {
   id: string;
@@ -32,7 +35,18 @@ interface Slide {
   stats: { value: string; label: string }[];
 }
 
-const slides: Slide[] = [
+const ICON_MAP: Record<string, React.ElementType> = {
+  Printer, Layers, Sparkles, ShoppingBag, Gift, Shirt, Coffee, Image,
+};
+
+const GRADIENT_MAP: Record<string, string> = {
+  indigo: "from-indigo-500/20 via-purple-500/10 to-transparent",
+  emerald: "from-emerald-500/20 via-teal-500/10 to-transparent",
+  purple: "from-purple-500/20 via-pink-500/10 to-transparent",
+  amber: "from-amber-500/20 via-orange-500/10 to-transparent",
+};
+
+const DEFAULT_SLIDES: Slide[] = [
   {
     id: "document-print",
     tag: "⚡ Super Fast",
@@ -107,6 +121,25 @@ const slides: Slide[] = [
   },
 ];
 
+function mapDbSlideToSlide(dbSlide: CarouselSlide): Slide {
+  return {
+    id: dbSlide.id,
+    tag: dbSlide.tag,
+    tagColor: dbSlide.tagColor,
+    headline: dbSlide.headline,
+    highlight: dbSlide.highlight,
+    sub: dbSlide.sub,
+    cta: { label: dbSlide.ctaLabel, href: dbSlide.ctaHref },
+    secondaryCta: dbSlide.secondaryCtaLabel
+      ? { label: dbSlide.secondaryCtaLabel, href: dbSlide.secondaryCtaHref || "/services" }
+      : undefined,
+    gradient: GRADIENT_MAP[dbSlide.accentColor] || GRADIENT_MAP.indigo,
+    accentColor: dbSlide.accentColor,
+    icon: ICON_MAP[dbSlide.iconName] || Printer,
+    stats: dbSlide.stats,
+  };
+}
+
 const accentClasses: Record<string, string> = {
   indigo: "from-indigo-500 via-indigo-600 to-purple-600",
   emerald: "from-emerald-400 via-emerald-500 to-teal-600",
@@ -145,8 +178,27 @@ export default function HeroCarousel() {
   const [[current, direction], setPage] = useState([0, 0]);
   const [paused, setPaused] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [slides, setSlides] = useState<Slide[]>(DEFAULT_SLIDES);
 
-  const slide = slides[current];
+  // Load slides from DB
+  useEffect(() => {
+    async function loadSlides() {
+      try {
+        const dbSlides = await dbService.getCollection<CarouselSlide>("carousel");
+        const activeSlides = dbSlides
+          .filter((s) => s.isActive)
+          .sort((a, b) => a.order - b.order);
+        if (activeSlides.length > 0) {
+          setSlides(activeSlides.map(mapDbSlideToSlide));
+        }
+      } catch (err) {
+        console.warn("Failed to load carousel slides from DB, using defaults:", err);
+      }
+    }
+    loadSlides();
+  }, []);
+
+  const slide = slides[current % slides.length];
   const Icon = slide.icon;
 
   const paginate = useCallback(
@@ -156,7 +208,7 @@ export default function HeroCarousel() {
         return [next, dir];
       });
     },
-    []
+    [slides.length]
   );
 
   // Auto-advance

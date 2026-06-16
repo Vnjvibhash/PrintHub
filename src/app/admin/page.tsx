@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                     fontSize: "12px",
                     color: "#f4f4f5",
                   }}
-                  formatter={(value: number) => [`₹${value.toFixed(2)}`, "Revenue"]}
+                  formatter={(value: any) => [`₹${Number(value).toFixed(2)}`, "Revenue"]}
                 />
                 <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} fill="url(#colorRevenue)" />
               </AreaChart>
