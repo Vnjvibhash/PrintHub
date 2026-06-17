@@ -401,7 +401,7 @@ export default function Navbar() {
             className="w-full flex items-center px-4 py-2 text-left text-sm hover:bg-indigo-50 dark:hover:bg-indigo-950/20 hover:text-indigo-600 dark:hover:text-indigo-400"
           >
             <Shield className="h-4 w-4 mr-2 text-rose-500" />
-            Admin (Admin Partner)
+            Admin (Viveka Jee)
           </button>
         </div>
       )}

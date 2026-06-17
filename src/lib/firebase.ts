@@ -698,7 +698,7 @@ export const dbService = {
       {
         uid: "user-admin",
         email: "admin@printhub.com",
-        displayName: "Admin Partner",
+        displayName: "Viveka Jee",
         role: "admin",
         photoURL: "https://api.dicebear.com/7.x/adventurer/svg?seed=Admin",
         addresses: [],
