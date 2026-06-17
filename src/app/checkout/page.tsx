@@ -51,7 +51,7 @@ function CheckoutContent() {
   // Completed Order state
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
-  // Initialize checkout configuration
+  // Initialize checkout configuration and keep price calculations up to date
   useEffect(() => {
     if (!serviceId) {
       router.push("/services");
@@ -67,22 +67,25 @@ function CheckoutContent() {
     }
     loadService();
 
-    const q = Number(qtyParam) || 1;
+    const q = Math.max(1, Number(qtyParam) || 1);
     setQuantity(q);
 
     let parsedSpecs: SpecificationOptions = {};
     if (specsParam) {
       try {
         parsedSpecs = JSON.parse(specsParam);
-        setSpecs(parsedSpecs);
       } catch (err) {
         console.error("Failed to parse specifications:", err);
       }
     }
+    setSpecs(parsedSpecs);
+  }, [serviceId, qtyParam, specsParam, router]);
 
-    const price = calculatePricing(serviceId, q, parsedSpecs);
+  useEffect(() => {
+    if (!serviceId) return;
+    const price = calculatePricing(serviceId, quantity, specs);
     setPriceBreakdown(price);
-  }, [serviceId, qtyParam, specsParam]);
+  }, [serviceId, quantity, specs]);
 
   // Autocomplete if user is authenticated
   useEffect(() => {
@@ -315,6 +318,25 @@ function CheckoutContent() {
                     className="w-full px-4 py-2.5 rounded-xl border border-zinc-205 dark:border-zinc-800 bg-white/5 text-sm focus:outline-none focus:border-indigo-500"
                     placeholder="jane@example.com"
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 uppercase mb-1.5">Order Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-zinc-205 dark:border-zinc-800 bg-white/5 text-sm focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 uppercase mb-1.5">Service Type</label>
+                  <div className="w-full px-4 py-2.5 rounded-xl border border-zinc-205 dark:border-zinc-800 bg-white/5 text-sm text-zinc-700 dark:text-zinc-200">
+                    {serviceCategory?.charAt(0).toUpperCase() + serviceCategory?.slice(1)}
+                  </div>
                 </div>
               </div>
 

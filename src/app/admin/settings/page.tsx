@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { dbService, isFirebaseEnabled } from "@/lib/firebase";
 import {
   Save,
   Check,
@@ -36,6 +37,8 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SettingsData>(DEFAULT_SETTINGS);
   const [saved, setSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+  const [seedMessage, setSeedMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem("printhub_db_settings");
@@ -154,6 +157,27 @@ export default function AdminSettingsPage() {
             Reset Defaults
           </button>
           <button
+            onClick={async () => {
+              if (!isFirebaseEnabled) return;
+              setSeeding(true);
+              setSeedMessage(null);
+              try {
+                await dbService.seedDefaultData();
+                setSeedMessage("Firebase seeding complete. Default data has been written.");
+              } catch (err) {
+                console.error(err);
+                setSeedMessage("Unable to seed Firebase. Check console and Firebase config.");
+              } finally {
+                setSeeding(false);
+              }
+            }}
+            disabled={!isFirebaseEnabled || seeding}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/10 text-xs font-bold text-emerald-300 hover:text-white hover:bg-emerald-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <RotateCcw className={`h-3.5 w-3.5 ${seeding ? "animate-spin" : ""}`} />
+            {seeding ? "Seeding Firebase..." : "Seed Firebase Data"}
+          </button>
+          <button
             onClick={handleSave}
             disabled={!hasChanges}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-lg shadow-indigo-500/20 disabled:opacity-40"
@@ -163,6 +187,12 @@ export default function AdminSettingsPage() {
           </button>
         </div>
       </div>
+
+      {seedMessage && (
+        <div className="rounded-xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-zinc-200">
+          {seedMessage}
+        </div>
+      )}
 
       {/* Unsaved warning */}
       {hasChanges && (
@@ -221,6 +251,11 @@ export default function AdminSettingsPage() {
               changes sync to Firestore automatically. In mock mode, settings persist in your browser&apos;s
               localStorage. These values are used across invoice generation, pricing calculations, and checkout flows.
             </p>
+            {!isFirebaseEnabled && (
+              <p className="text-[11px] text-rose-400 mt-3">
+                Firebase is not enabled. Set your Firebase environment variables and restart the app to seed data.
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   Gift,
   Settings,
+  Users,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -32,6 +33,7 @@ const sidebarLinks = [
   { name: "Pricing", href: "/admin/pricing", icon: DollarSign },
   { name: "Merchandise", href: "/admin/merchandise", icon: ShoppingBag },
   { name: "Offers", href: "/admin/offers", icon: Gift },
+  { name: "Users", href: "/admin/users", icon: Users },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

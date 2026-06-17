@@ -44,6 +44,8 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+const firebaseGoogleClientId = process.env.NEXT_PUBLIC_FIREBASE_GOOGLE_CLIENT_ID;
+
 const isFirebaseConfigured = !!(
   firebaseConfig.apiKey && 
   firebaseConfig.projectId && 
@@ -179,7 +181,7 @@ const initLocalDatabase = () => {
       "user-customer": {
         uid: "user-customer",
         email: "customer@printhub.com",
-        displayName: "Jane Doe",
+        displayName: "Vikas Yadav",
         role: "customer",
         photoURL: "https://api.dicebear.com/7.x/adventurer/svg?seed=Jane",
         addresses: [
@@ -191,7 +193,7 @@ const initLocalDatabase = () => {
       "user-admin": {
         uid: "user-admin",
         email: "admin@printhub.com",
-        displayName: "Admin Partner",
+        displayName: "Viveka Jee",
         role: "admin",
         photoURL: "https://api.dicebear.com/7.x/adventurer/svg?seed=Admin",
         addresses: [],
@@ -491,6 +493,12 @@ export const authService = {
   signInWithGoogle: async (): Promise<UserProfile> => {
     if (isFirebaseEnabled) {
       const provider = new GoogleAuthProvider();
+      if (firebaseGoogleClientId) {
+        provider.setCustomParameters({
+          client_id: firebaseGoogleClientId,
+          prompt: "select_account",
+        });
+      }
       const userCred = await signInWithPopup(firebaseAuth!, provider);
       const docRef = doc(firebaseDb!, "users", userCred.user.uid);
       const docSnap = await getDoc(docRef);
@@ -658,6 +666,202 @@ export const dbService = {
         setLocalData(collName, collectionData);
       }
     }
+  },
+
+  // Seed default data into Firebase for a configured project.
+  seedDefaultData: async (): Promise<void> => {
+    if (!isFirebaseEnabled) {
+      throw new Error("Firebase is not configured.");
+    }
+
+    const defaultUsers: UserProfile[] = [
+      {
+        uid: "user-customer",
+        email: "customer@printhub.com",
+        displayName: "Jane Doe",
+        role: "customer",
+        photoURL: "https://api.dicebear.com/7.x/adventurer/svg?seed=Jane",
+        addresses: [
+          {
+            id: "addr-1",
+            name: "Home",
+            street: "Flat 402, Royal Gardens",
+            city: "Noida",
+            state: "Uttar Pradesh",
+            zipCode: "201301",
+            phone: "9876543210",
+          },
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        uid: "user-admin",
+        email: "admin@printhub.com",
+        displayName: "Admin Partner",
+        role: "admin",
+        photoURL: "https://api.dicebear.com/7.x/adventurer/svg?seed=Admin",
+        addresses: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    const defaultSlides: CarouselSlide[] = [
+      {
+        id: "slide-document-print",
+        tag: "⚡ Super Fast",
+        tagColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+        headline: "Print Documents,",
+        highlight: "Instantly.",
+        sub: "A4 & A3 documents, reports, theses — B&W or full color. Ready within the hour.",
+        ctaLabel: "Upload & Order Now",
+        ctaHref: "/services",
+        secondaryCtaLabel: "View Pricing",
+        secondaryCtaHref: "/pricing",
+        accentColor: "indigo",
+        iconName: "Printer",
+        stats: [
+          { value: "₹2", label: "per A4 B&W page" },
+          { value: "₹10", label: "per A4 color page" },
+          { value: "1 hr", label: "average turnaround" },
+        ],
+        isActive: true,
+        order: 0,
+      },
+      {
+        id: "slide-business-cards",
+        tag: "💼 Corporate",
+        tagColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+        headline: "Premium Business",
+        highlight: "Cards & Stationery.",
+        sub: "350GSM matte & glossy finish cards, letterheads, envelopes, and brochures for your brand.",
+        ctaLabel: "Design Your Cards",
+        ctaHref: "/services",
+        secondaryCtaLabel: "Bulk Quote",
+        secondaryCtaHref: "/pricing",
+        accentColor: "emerald",
+        iconName: "Layers",
+        stats: [
+          { value: "₹1.5", label: "per card" },
+          { value: "500+", label: "minimum for bulk" },
+          { value: "350gsm", label: "premium cardstock" },
+        ],
+        isActive: true,
+        order: 1,
+      },
+      {
+        id: "slide-custom-merch",
+        tag: "🎁 Trending Now",
+        tagColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+        headline: "Custom Merchandise",
+        highlight: "Made to Order.",
+        sub: "T-shirts, hoodies, caps, mugs, cushions, mobile covers and more — print your design on anything.",
+        ctaLabel: "Start Customizing",
+        ctaHref: "/customizer",
+        secondaryCtaLabel: "See All Merch",
+        secondaryCtaHref: "/services",
+        accentColor: "purple",
+        iconName: "Sparkles",
+        stats: [
+          { value: "20+", label: "product types" },
+          { value: "₹150", label: "starting price" },
+          { value: "DTF", label: "premium print tech" },
+        ],
+        isActive: true,
+        order: 2,
+      },
+      {
+        id: "slide-gifts",
+        tag: "🎀 Perfect Gifts",
+        tagColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+        headline: "Personalized Gifts",
+        highlight: "They'll Love.",
+        sub: "Magic mugs, canvas prints, photo pillows, keychains, and more — perfect for every occasion.",
+        ctaLabel: "Browse Gift Ideas",
+        ctaHref: "/customizer",
+        secondaryCtaLabel: "Corporate Gifts",
+        secondaryCtaHref: "/services",
+        accentColor: "amber",
+        iconName: "Gift",
+        stats: [
+          { value: "100%", label: "custom printed" },
+          { value: "₹150", label: "mugs starting at" },
+          { value: "Next day", label: "dispatch available" },
+        ],
+        isActive: true,
+        order: 3,
+      },
+    ];
+
+    const defaultOrders: Order[] = [
+      {
+        id: "PH-9821",
+        customerId: "user-customer",
+        customerEmail: "customer@printhub.com",
+        customerName: "Jane Doe",
+        serviceId: "a4-color",
+        serviceName: "A4 Color Printing",
+        serviceCategory: "printing",
+        files: [{ name: "semester_project_presentation.pdf", url: "#", size: 1048576, type: "application/pdf" }],
+        quantity: 1,
+        specifications: { paperSize: "A4", colorMode: "color", sides: "double", binding: "spiral", pages: 15, copies: 2 },
+        priceBreakdown: { base: 10, optionsPrice: 40, subtotal: 340, gst: 61.2, total: 401.2 },
+        paymentId: "pay_mock_12345",
+        paymentMethod: "stripe",
+        paymentStatus: "completed",
+        orderStatus: "Ready for Pickup",
+        createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+        updatedAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+      },
+      {
+        id: "PH-7712",
+        customerId: "user-customer",
+        customerEmail: "customer@printhub.com",
+        customerName: "Jane Doe",
+        serviceId: "mug-print",
+        serviceName: "Custom Mug Printing",
+        serviceCategory: "merchandise",
+        files: [{ name: "my_family_portrait.jpg", url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300", size: 409600, type: "image/jpeg" }],
+        quantity: 2,
+        specifications: { size: "M" as any, color: "#ffffff", customText: "Happy Birthday Mom", customImageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300" },
+        priceBreakdown: { base: 150, optionsPrice: 0, subtotal: 300, gst: 54, total: 354 },
+        paymentId: "pay_mock_67890",
+        paymentMethod: "upi",
+        paymentStatus: "completed",
+        orderStatus: "Delivered",
+        createdAt: new Date(Date.now() - 3600000 * 24 * 10).toISOString(),
+        updatedAt: new Date(Date.now() - 3600000 * 24 * 8).toISOString(),
+      },
+    ];
+
+    const tasks: Promise<unknown>[] = [];
+
+    DEFAULT_SERVICES.forEach((service) => {
+      tasks.push(dbService.setDocument("services", service.id, service));
+    });
+    DEFAULT_PRODUCTS.forEach((product) => {
+      tasks.push(dbService.setDocument("products", product.id, product));
+    });
+    defaultUsers.forEach((user) => {
+      tasks.push(dbService.setDocument("users", user.uid, user));
+    });
+    tasks.push(dbService.setDocument("settings", "app-settings", {
+      gstNumber: "27AAAAA1111A1Z1",
+      companyName: "PrintHub Services Ltd.",
+      companyAddress: "102, Digital Towers, Sector 62, Noida, UP - 201301",
+      taxRate: 18,
+      upiId: "pay.printhub@okaxis",
+      contactEmail: "support@printhub.com",
+    }));
+    defaultOrders.forEach((order) => {
+      tasks.push(dbService.setDocument("orders", order.id, order));
+    });
+    defaultSlides.forEach((slide) => {
+      tasks.push(dbService.setDocument("carousel", slide.id, slide));
+    });
+
+    await Promise.all(tasks);
   },
 
   // Query documents with filters

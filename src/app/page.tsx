@@ -1,11 +1,14 @@
 "use client";
 
-import React from "react";
+"use client";
+
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroCarousel from "@/components/home/HeroCarousel";
 import { motion } from "framer-motion";
+import { calculatePricing } from "@/lib/pricing";
 import { 
   Upload, 
   ShoppingBag, 
@@ -53,6 +56,26 @@ export default function Home() {
     { name: "Sneha Kapoor", role: "Brand Manager", review: "Ordered 500 visiting cards and customized hoodies for our startup crew. Colors match our branding exactly and prints are very durable.", rating: 5 },
     { name: "Amit Joshi", role: "Gift Shop Owner", review: "The Magic Mugs are a bestseller. The transition is smooth and prints look premium. The bulk billing tools make tracking payments a breeze.", rating: 5 }
   ];
+
+  const [paperSize, setPaperSize] = useState<"A4" | "A3">("A4");
+  const [colorMode, setColorMode] = useState<"bw" | "color">("bw");
+  const [binding, setBinding] = useState<"none" | "spiral" | "lamination">("none");
+  const [copies, setCopies] = useState<number>(100);
+  const [pages, setPages] = useState<number>(1);
+
+  const estimatorServiceId = useMemo(() => {
+    const sizeKey = paperSize.toLowerCase();
+    return `${sizeKey}-${colorMode}`;
+  }, [paperSize, colorMode]);
+
+  const priceBreakdown = useMemo(() => {
+    return calculatePricing(estimatorServiceId, copies, {
+      pages,
+      copies,
+      sides: "single",
+      binding,
+    });
+  }, [estimatorServiceId, copies, pages, binding]);
 
   return (
     <>
@@ -193,30 +216,124 @@ export default function Home() {
                   <div>
                     <label className="block font-semibold mb-1 text-xs uppercase tracking-wider text-zinc-400">Paper Type</label>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="px-4 py-2.5 rounded-xl border border-indigo-500 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 text-center font-medium cursor-pointer">A4 Document</div>
-                      <div className="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-center font-medium hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer">A3 Large Form</div>
+                      <button
+                        type="button"
+                        onClick={() => setPaperSize("A4")}
+                        className={`px-4 py-2.5 rounded-xl border text-center font-medium transition ${
+                          paperSize === "A4"
+                            ? "border-indigo-500 bg-indigo-500/10 text-indigo-600"
+                            : "border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700"
+                        }`}
+                      >
+                        A4 Document
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaperSize("A3")}
+                        className={`px-4 py-2.5 rounded-xl border text-center font-medium transition ${
+                          paperSize === "A3"
+                            ? "border-indigo-500 bg-indigo-500/10 text-indigo-600"
+                            : "border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700"
+                        }`}
+                      >
+                        A3 Large Form
+                      </button>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block font-semibold mb-1 text-xs uppercase tracking-wider text-zinc-400">Color format</label>
                       <div className="flex bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl">
-                        <div className="flex-1 py-1.5 text-center bg-white dark:bg-zinc-900 rounded-lg shadow-sm font-medium cursor-pointer text-xs">B / W</div>
-                        <div className="flex-1 py-1.5 text-center font-medium cursor-pointer text-zinc-400 text-xs">Color</div>
+                        <button
+                          type="button"
+                          onClick={() => setColorMode("bw")}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${
+                            colorMode === "bw"
+                              ? "bg-white dark:bg-zinc-900 text-indigo-600 shadow-sm"
+                              : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                          }`}
+                        >
+                          B / W
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setColorMode("color")}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${
+                            colorMode === "color"
+                              ? "bg-white dark:bg-zinc-900 text-indigo-600 shadow-sm"
+                              : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                          }`}
+                        >
+                          Color
+                        </button>
                       </div>
                     </div>
                     <div>
                       <label className="block font-semibold mb-1 text-xs uppercase tracking-wider text-zinc-400">Binding Option</label>
                       <div className="flex bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl">
-                        <div className="flex-1 py-1.5 text-center bg-white dark:bg-zinc-900 rounded-lg shadow-sm font-medium cursor-pointer text-xs">None</div>
-                        <div className="flex-1 py-1.5 text-center font-medium cursor-pointer text-zinc-400 text-xs">Spiral</div>
+                        <button
+                          type="button"
+                          onClick={() => setBinding("none")}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${
+                            binding === "none"
+                              ? "bg-white dark:bg-zinc-900 text-indigo-600 shadow-sm"
+                              : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                          }`}
+                        >
+                          None
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBinding("spiral")}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${
+                            binding === "spiral"
+                              ? "bg-white dark:bg-zinc-900 text-indigo-600 shadow-sm"
+                              : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                          }`}
+                        >
+                          Spiral
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBinding("lamination")}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${
+                            binding === "lamination"
+                              ? "bg-white dark:bg-zinc-900 text-indigo-600 shadow-sm"
+                              : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                          }`}
+                        >
+                          Lamination
+                        </button>
                       </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <label className="block font-semibold mb-1 text-xs uppercase tracking-wider text-zinc-400">Pages</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={pages}
+                        onChange={(e) => setPages(Math.max(1, Number(e.target.value) || 1))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1 text-xs uppercase tracking-wider text-zinc-400">Copies</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={copies}
+                        onChange={(e) => setCopies(Math.max(1, Number(e.target.value) || 1))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                      />
                     </div>
                   </div>
                   <div className="flex justify-between items-center bg-zinc-100 dark:bg-zinc-950/50 p-4 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 mt-8">
                     <div>
-                      <span className="text-xs text-zinc-400">Estimated Subtotal (100 Copies)</span>
-                      <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-0.5">₹200.00</p>
+                      <span className="text-xs text-zinc-400">Estimated Subtotal ({copies} copies)</span>
+                      <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-0.5">₹{priceBreakdown.subtotal.toFixed(2)}</p>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">Total incl. GST: ₹{priceBreakdown.total.toFixed(2)}</p>
                     </div>
                     <Link href="/services" className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700">Calculate Custom Specs</Link>
                   </div>

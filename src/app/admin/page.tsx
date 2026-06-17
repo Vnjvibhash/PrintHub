@@ -124,6 +124,7 @@ export default function AdminDashboard() {
   const quickActions = [
     { label: "Manage Orders", href: "/admin/orders", icon: Package, desc: "View & update order statuses" },
     { label: "Edit Services", href: "/admin/services", icon: Layers, desc: "Add, edit, or remove services" },
+    { label: "Manage Users", href: "/admin/users", icon: Users, desc: "Review and manage registered accounts" },
     { label: "Create Offer", href: "/admin/offers", icon: Gift, desc: "Launch a new promotional offer" },
     { label: "Update Pricing", href: "/admin/pricing", icon: DollarSign, desc: "Change service rates" },
   ];
